@@ -1,0 +1,32 @@
+0000-                  2       ;---------------------------------------------------------------------------
+0000-                  3       ;
+0000-                  4       ;               CYLON
+0000-                  5       ;
+0000-                  6       ;---------------------------------------------------------------------------
+0000-                  7
+0000-                  8               .CR     Z80                             ;It's a Z80 assembler now
+0000-                  9               .TF cylon.bin, bin
+0000-                 10               .OR $0000
+0000-                 11
+0000-                 12       PORT_A          .EQ $00         ;8255 PORT A address - LED bargraph
+0001-                 13       PORT_B          .EQ $01         ;8255 PORT B address - Not used
+0002-                 14       PORT_C          .EQ $02         ;8255 PORT C address - Not used
+0003-                 15       PORT_CTL        .EQ $03         ;8255 Control register address
+0000-                 16
+0000-3E 80            17 (  7)     LD A, $80           ;Set all 8255 ports to outputs
+0002-D3 03            18 ( 11)     OUT (PORT_CTL), A
+0004-                 19
+0004-06 80            20 (  7)     LD B, $80           ;Set the highest bit to bit 7
+0006-                 21       RESET
+0006-3E 01            22 (  7)     LD A, $01           ;Start at bit 0
+0008-D3 00            23 ( 11)     OUT (PORT_A), A
+000A-                 24       MOVE_LEFT
+000A-CB 27            25 (  8)     SLA A
+000C-D3 00            26 ( 11)     OUT (PORT_A), A
+000E-B8               27 (  4)     CP B
+000F-C2 0A 00         28 ( 10)     JP NZ,MOVE_LEFT
+0012-                 29       MOVE_RIGHT
+0012-CB 3F            30 (  8)     SRL A
+0014-CA 06 00         31 ( 10)     JP Z,RESET
+0017-D3 00            32 ( 11)     OUT (PORT_A), A
+0019-C3 12 00         33 ( 10)     JP MOVE_RIGHT
